@@ -64,6 +64,7 @@ class Game extends React.Component {
 
     this.state = {
       history : [{ squares: Array(9).fill(null) }],
+      lastClickedColAndRow: [],
       stepNumber: 0,
       xIsNext : true,
 
@@ -75,10 +76,11 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[ this.state.stepNumber ];
     const winner = calculateWinner(current.squares);
+    const historyColAndRowClick = this.state.lastClickedColAndRow;
 
     // Returns a react element 
     const moves = history.map((step, move)=> {
-      const desc = move ? 'Go to move # ' + move : 'Go to game start';
+      const desc = move ? 'Go to move # ' + move + ' (' + (historyColAndRowClick[ move - 1]) + ')': 'Go to game start';
 
       // Return the react element
       return(
@@ -121,7 +123,16 @@ class Game extends React.Component {
     // Return a copy of the array of each square's states
     // This helps us build a pure component through immutability. Instead of modifying this.state.squares directly we will modify a copy of that data 
     const squares = current.squares.slice();
+    const clickedColumnsAndRowHistory = this.state.lastClickedColAndRow.slice()
 
+    // Determine the row and column of the square based on its index
+    let row;
+
+    if (i < 3){ row = 1}
+    if (i > 2 && i < 6){ row = 2 }
+    if (i > 5){ row = 3 }
+
+    const column = i % 3 + 1 
 
     // Ignore a click if the game already has a winner or the square is already filled
     if (calculateWinner(squares) || squares[i]){ return; }
@@ -135,6 +146,7 @@ class Game extends React.Component {
     // flip the xIsNext flag
     this.setState({
       history: history.concat([{ squares: squares }]),
+      lastClickedColAndRow : clickedColumnsAndRowHistory.concat([ [column, row] ]),
       squares: squares,
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
