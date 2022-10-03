@@ -1,4 +1,5 @@
 import React from 'react';
+import useState from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
@@ -63,6 +64,8 @@ class Game extends React.Component {
     super(props);
 
     this.state = {
+      // activeButton 
+      activeButton: null, 
       history : [{ squares: Array(9).fill(null) }],
       lastClickedColAndRow: [],
       stepNumber: 0,
@@ -77,10 +80,10 @@ class Game extends React.Component {
     const current = history[ this.state.stepNumber ];
     const winner = calculateWinner(current.squares);
     const historyColAndRowClick = this.state.lastClickedColAndRow;
-
+    
     // Returns a react element 
     const moves = history.map((step, move)=> {
-      const desc = move ? 'Go to move # ' + move + ' (' + (historyColAndRowClick[ move - 1]) + ')': 'Go to game start';
+      const desc = move ?  'Go to move # ' + move + ' (' + (historyColAndRowClick[ move - 1 ]) + ')': 'Go to game start';
 
       // Return the react element
       return(
@@ -88,10 +91,15 @@ class Game extends React.Component {
         // Assign proper keys when you are building a dynamic list
         // Keys needs to be unique between components and their siblings
         <li key={move}> 
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button 
+          onClick={() => this.jumpTo(move)}
+          // 600 appears as bold while 400 appears as regular text
+          style={{ fontWeight: this.state.activeButton === move ? 600 : 400 }}
+          >
+            {desc}
+          </button>
         </li>
       );
-
     }); 
 
     let status;
@@ -155,6 +163,8 @@ class Game extends React.Component {
 
   jumpTo(step){
     this.setState({
+      activeButton: step,
+      boldButtonText: true,
       stepNumber: step,
       xIsNext: (step % 2) === 0,
     });
